@@ -77,22 +77,59 @@ URLINFO = {
         }
     },
 
-    'submitOrderRequest': 'https://kyfw.12306.cn/otn/leftTicket/submitOrderRequest',
+    'submitOrderRequest': {
+        'url': 'https://kyfw.12306.cn/otn/leftTicket/submitOrderRequest',
+        'headers': {
+            'Referer': 'https://kyfw.12306.cn/otn/leftTicket/init',
+        }
+    },
 
-    'initDC': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+    'initDC': {
+        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+        'headers': {
+            'Referer': 'https://kyfw.12306.cn/otn/leftTicket/init'
+        }
+    },
 
-    'passenger': 'https://kyfw.12306.cn/otn/confirmPassenger/getPassengerDTOs',
+    'passenger': {
+        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/getPassengerDTOs',
+        'headers': 'https://kyfw.12306.cn/otn/confirePassenger/initDc'
+    },
 
-    'checkOrderInfo': 'https://kyfw.12306.cn/otn/confirmPassenger/checkOrderInfo',
+    'checkOrderInfo': {
+        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/checkOrderInfo',
+        'headers': {
+            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+        }
+    },
 
-    'getQueueCount': 'https://kyfw.12306.cn/otn/confirmPassenger/getQueueCount',
+    'getQueueCount': {
+        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/getQueueCount',
+        'headers': {
+            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+        }
+    },
 
-    'confirmSingleForQueue': 'https://kyfw.12306.cn/otn/confirmPassenger/confirmSingle',
+    'confirmSingleForQueue': {
+        'url':'https://kyfw.12306.cn/otn/confirmPassenger/confirmSingle',
+        'headers': {
+            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+        }
+    },
 
-    'queryOrderWaitTime':  'https://kyfw.12306.cn/otn/confirmPassenger/queryOrderWaitTime?random={}&tourFlag=dc&_json_att=&REPEAT_SUBMIT_TOKEN={}',
+    'queryOrderWaitTime':  {
+        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/queryOrderWaitTime?random={}&tourFlag=dc&_json_att=&REPEAT_SUBMIT_TOKEN={}',
+        'headers': {
+            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+        }
+    },
 
-    'resultOrderForDcQueue': 'https://kyfw.12306.cn/otn/confirmPassenger/resultOrderForDcQueue'
-
+    'resultOrderForDcQueue': {
+        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/resultOrderForDcQueue',
+        'headers': {
+            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+        }
+    },
 }
 
 HEADERS = {
