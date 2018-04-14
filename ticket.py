@@ -5,7 +5,7 @@ import os
 from PIL import Image
 import re
 from Info import *
-from Config import URLINFO, HEADERS, SEAT
+from Config import *
 import time
 import json
 import random
@@ -21,7 +21,8 @@ def get_image():
     i = 5
     while i:
         try:
-            response = session.get(URLINFO['captcha-image']['url'].format(random.random))
+            response = session.get(URLINFO['captcha-image']['url'].format(
+                random.random))
             # print(session.cookies)
             with open('img.jpg', 'wb') as f:
                 f.write(response.content)
@@ -42,13 +43,7 @@ def get_image():
     print('-------------------------')
     code = input('请输入验证码（如123）：')
     code_all = [
-        '30,45',
-        '105,45',
-        '178,45',
-        '255,45',
-        '31,120',
-        '114,120',
-        '180,120',
+        '30,45', '105,45', '178,45', '255,45', '31,120', '114,120', '180,120',
         '255,120'
     ]
     ans = []
@@ -59,11 +54,7 @@ def get_image():
 
 
 def check_image():
-    data = {
-        'answer': get_image(),
-        'login_site': 'E',
-        'rand': 'sjrand'
-    }
+    data = {'answer': get_image(), 'login_site': 'E', 'rand': 'sjrand'}
     response = session.post(URLINFO['captcha-check']['url'], data=data)
     # print(session.cookies)
     if response.json()['result_code'] == '4':
@@ -94,9 +85,12 @@ def login_first():
 # 访问uamtk 获取 newapptk
 def login_second():
     print('第二步登陆验证中...')
-    response = session.post(URLINFO['uamtk']['url'],
-                            data={'appid': 'otn'},
-                            headers=URLINFO['uamtk']['headers']).json()
+    response = session.post(
+        URLINFO['uamtk']['url'],
+        data={
+            'appid': 'otn'
+        },
+        headers=URLINFO['uamtk']['headers']).json()
     if response['result_code']:
         print('第二步登陆验证失败')
         return False
@@ -110,8 +104,12 @@ def login_third(newapptk):
     i = 5
     while i:
         try:
-            response = session.post(URLINFO['uamauthclient']['url'],
-                                data={'tk': newapptk}, timeout=5).json()
+            response = session.post(
+                URLINFO['uamauthclient']['url'],
+                data={
+                    'tk': newapptk
+                },
+                timeout=5).json()
             if response['result_code'] == 0:
                 print('username: ' + response['username'])
                 return True
@@ -151,9 +149,10 @@ def trans_city_code(uchar):
         city_code = f.readline()
 
     if u'\u9fa5' >= uchar[0] >= u'\u4e00':  # 中文
-        return re.compile(uchar+'\|(.+?)\|').findall(city_code)[0]
+        return re.compile(uchar + '\|(.+?)\|').findall(city_code)[0]
     else:
-        return re.compile('\|([\u4E00-\u9FA5)]+?)\|'+uchar).findall(city_code)[0]
+        return re.compile('\|([\u4E00-\u9FA5)]+?)\|' + uchar).findall(
+            city_code)[0]
 
 
 def check_no(s):
@@ -163,57 +162,52 @@ def check_no(s):
 
 
 def print_train_info(train_list):
-        # secretStr：0
-        # 内容 预定:1
-        # 车次：3
-        # 起始站：4
-        # 终点站：5
-        # 出发站：6
-        # 到达站：7
-        # 出发时间：8
-        # 达到时间：9
-        # 历时：10
-        # 是否可以预订（Y可以 N不可以）:   11
-        # 商务特等座：32
-        # 一等座：31
-        # 二等座：30
-        # 高级软卧：21
-        # 软卧：23
-        # 动卧：33
-        # 硬卧：28
-        # 软座：24
-        # 硬座：29
-        # 无座：26
-        # 其他：22
-        # 车票出发日期：13
+    # secretStr：0
+    # 内容 预定:1
+    # 车次：3
+    # 起始站：4
+    # 终点站：5
+    # 出发站：6
+    # 到达站：7
+    # 出发时间：8
+    # 达到时间：9
+    # 历时：10
+    # 是否可以预订（Y可以 N不可以）:   11
+    # 商务特等座：32
+    # 一等座：31
+    # 二等座：30
+    # 高级软卧：21
+    # 软卧：23
+    # 动卧：33
+    # 硬卧：28
+    # 软座：24
+    # 硬座：29
+    # 无座：26
+    # 其他：22
+    # 车票出发日期：13
     if train_list:
         print('车次  出发站 到站 出发时间 到站时间 历时 特等 一等 二等 高级软卧 软卧 动卧 硬卧 软座 硬座 无座 能否购票')
         for train in train_list:
             train_detail = train.split('|')
             if train_detail[3][0] in TRAIN_TYPE:
-                print(train_detail[3],
-                      trans_city_code(train_detail[6]),
-                      trans_city_code(train_detail[7]),
-                      train_detail[8],
-                      train_detail[9],
-                      train_detail[10],
-                      check_no(train_detail[32]),
-                      check_no(train_detail[31]),
-                      check_no(train_detail[30]),
-                      check_no(train_detail[21]),
-                      check_no(train_detail[23]),
-                      check_no(train_detail[33]),
-                      check_no(train_detail[24]),
-                      check_no(train_detail[28]),
-                      check_no(train_detail[29]),
-                      check_no(train_detail[26]),
+                print(train_detail[3], trans_city_code(train_detail[6]),
+                      trans_city_code(train_detail[7]), train_detail[8],
+                      train_detail[9], train_detail[10],
+                      check_no(train_detail[32]), check_no(train_detail[31]),
+                      check_no(train_detail[30]), check_no(train_detail[21]),
+                      check_no(train_detail[23]), check_no(train_detail[33]),
+                      check_no(train_detail[24]), check_no(train_detail[28]),
+                      check_no(train_detail[29]), check_no(train_detail[26]),
                       train_detail[11])
-                print('----------------------------------------------------------------')
-        print('----------------------------------------------------------------')
+                print(
+                    '----------------------------------------------------------------'
+                )
+        print(
+            '----------------------------------------------------------------')
     else:
         print('没有车次')
 
-# seatType:商务座(9),特等座(P),一等座(M),二等座(O),高级软卧(6),软卧(4),硬卧(3),软座(2),硬座(1),无座(1)
+
 def choose_seat(seat):
     return SEAT[seat]
 
@@ -233,32 +227,26 @@ def search_ticket():
         for train in train_list:
             train_detail = train.split('|')
             if train_detail[3] in TRAIN_WANTED:
-                print(train_detail[3],
-                      trans_city_code(train_detail[6]),
-                      trans_city_code(train_detail[7]),
-                      train_detail[8],
-                      train_detail[9],
-                      train_detail[10],
-                      check_no(train_detail[32]),
-                      check_no(train_detail[31]),
-                      check_no(train_detail[30]),
-                      check_no(train_detail[21]),
-                      check_no(train_detail[23]),
-                      check_no(train_detail[33]),
-                      check_no(train_detail[24]),
-                      check_no(train_detail[28]),
-                      check_no(train_detail[29]),
-                      check_no(train_detail[26]),
+                print(train_detail[3], trans_city_code(train_detail[6]),
+                      trans_city_code(train_detail[7]), train_detail[8],
+                      train_detail[9], train_detail[10],
+                      check_no(train_detail[32]), check_no(train_detail[31]),
+                      check_no(train_detail[30]), check_no(train_detail[21]),
+                      check_no(train_detail[23]), check_no(train_detail[33]),
+                      check_no(train_detail[24]), check_no(train_detail[28]),
+                      check_no(train_detail[29]), check_no(train_detail[26]),
                       train_detail[11])
-                print('----------------------------------------------------------------')
+                print(
+                    '----------------------------------------------------------------'
+                )
                 for seat in SEAT_WANTED:
-                    if train_detail[int(seat)] != '无' or train_detail[int(seat)] != '' and train_detail[11] == 'Y':
+                    if train_detail[int(seat)] != '无' or train_detail[int(
+                            seat)] != '' and train_detail[11] == 'Y':
                         print('查到车次')
-                        return(train_detail[0],
-                               trans_city_code(train_detail[6]),
-                               trans_city_code(train_detail[7]),
-                               choose_seat(seat))
-
+                        return (train_detail[0],
+                                trans_city_code(train_detail[6]),
+                                trans_city_code(train_detail[7]),
+                                choose_seat(seat))
 
 
 def find_tickets():
@@ -266,15 +254,15 @@ def find_tickets():
         i = 3
         while i:
             try:
-                response = session.get(URLINFO['url_query'].format(
-                    train_date=TRAIN_DATE,
-                    from_station_code=FROM_STATION_CODE,
-                    to_station_code=TO_STATION_CODE),
-                    headers=HEADERS
-                )
+                response = session.get(
+                    URLINFO['url_query'].format(
+                        train_date=TRAIN_DATE,
+                        from_station_code=FROM_STATION_CODE,
+                        to_station_code=TO_STATION_CODE),
+                    headers=HEADERS)
                 train_list = response.json()['data']['result']
                 # print_train_info(train_list)
-                return(search_ticket())
+                return (search_ticket())
             except Exception as e:
                 print(e)
                 time.sleep(1)
@@ -307,16 +295,19 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
     data = {
         'secretStr': trainSecretStr,
         'train_date': TRAIN_DATE,
-        'back_train_date': time.strftime('%Y-%m-%d', time.localtime(time.time())),
+        'back_train_date': time.strftime('%Y-%m-%d', time.localtime(
+            time.time())),
         'tour_flag': 'dc',
         'purpose_code': 'ADULT',
         'query_from_station_name': from_station,
         'query_to_station_name': to_station,
         'undefined': ''
     }
-    data = str(data)[1:-1].replace(':', '=').replace(',', '&').replace(' ', '').replace('\'', '')
+    data = str(data)[1:-1].replace(':', '=').replace(',', '&').replace(
+        ' ', '').replace('\'', '')
     data = requests.utils.requote_uri(data)
-    response = session.post(URLINFO['submitOrderRequest'], data=data).json()
+    response = session.post(
+        URLINFO['submitOrderRequest']['url'], data=data).json()
     # print(response)
     if not response['status']:
         print('订单提交失败')
@@ -326,13 +317,14 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
     # 2 initDC
     print('init')
     try:
-        response = session.post(URLINFO['initDC'], data='_json_att=')
+        response = session.post(URLINFO['initDC']['url'], data='_json_att=')
     except:
         sys.exit()
     pattern = re.compile('globalRepeatSubmitToken = \'(.*?)\'')
     pattern2 = re.compile('ticketInfoForPassengerForm=(.*?);')
     globalRepeatSubmitToken = pattern.findall(response.text)[0]
-    ticketInfoForPassengerForm = json.loads(pattern2.findall(response.text)[0].replace('\'', '\"'))
+    ticketInfoForPassengerForm = json.loads(
+        pattern2.findall(response.text)[0].replace('\'', '\"'))
     # print(globalRepeatSubmitToken)
     # print(ticketInfoForPassengerForm)
 
@@ -343,7 +335,7 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
         'REPEAT_SUBMIT_TOKEN': globalRepeatSubmitToken,
     }
     try:
-        response = session.post(URLINFO['passenger'], data=data).json()
+        response = session.post(URLINFO['passenger']['url'], data=data).json()
         # print(response)
         passenger = choose_passenger(response)
     except:
@@ -367,7 +359,7 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
         passengerTicketStr, oldPassengerStr, globalRepeatSubmitToken)
     data = requests.utils.requote_uri(data)
 
-    response = session.post(URLINFO['checkOrderInfo'], data=data).json()
+    response = session.post(URLINFO['checkOrderInfo']['url'], data=data).json()
     # print(response)
     if response['data']['submitStatus']:
         print('订单验证成功')
@@ -376,24 +368,36 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
 
     # 5 getQueueCount
     print('getQueueCount...')
-    dateGMT = time.strftime('%a %b %d %Y %H:%M:%S  GMT+0800', time.strptime(TRAIN_DATE, '%Y-%m-%d'))
+    dateGMT = time.strftime('%a %b %d %Y %H:%M:%S  GMT+0800',
+                            time.strptime(TRAIN_DATE, '%Y-%m-%d'))
     data = {
-        'train_date': dateGMT,
-        'train_no': ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['train_no'],
-        'stationTrainCode': ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['station_train_code'],
-        'seatType': seat,
-        'fromStationTelecode': ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['from_station'],
-        'toStationTelecode': ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['to_station'],
-        'leftTicket': ticketInfoForPassengerForm['leftTicketStr'],
-        'purpose_codes': '00',
-        'train_location': ticketInfoForPassengerForm['train_location'],
-        '_json_att': '',
-        'REPEAT_SUBMIT_TOKEN': globalRepeatSubmitToken,
-
+        'train_date':
+        dateGMT,
+        'train_no':
+        ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['train_no'],
+        'stationTrainCode':
+        ticketInfoForPassengerForm['queryLeftTicketRequestDTO'][
+            'station_train_code'],
+        'seatType':
+        seat,
+        'fromStationTelecode':
+        ticketInfoForPassengerForm['queryLeftTicketRequestDTO'][
+            'from_station'],
+        'toStationTelecode':
+        ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['to_station'],
+        'leftTicket':
+        ticketInfoForPassengerForm['leftTicketStr'],
+        'purpose_codes':
+        '00',
+        'train_location':
+        ticketInfoForPassengerForm['train_location'],
+        '_json_att':
+        '',
+        'REPEAT_SUBMIT_TOKEN':
+        globalRepeatSubmitToken,
     }
-    response = session.post(URLINFO['getQueueCount'], data=data)
+    response = session.post(URLINFO['getQueueCount']['url'], data=data)
     # print(response.text)
-
 
     # 6 confirmSingleForQueue
     print('confirmSingleForQueue...')
@@ -414,11 +418,9 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
         'REPEAT_SUBMIT_TOKEN': globalRepeatSubmitToken,
     }
     try:
-        response = session.post(URLINFO['confirmSingleForQueue'],
-                                headers={
-                                    'Referer': 'https://kyfw.12306.cn/otn/confiremPassenger/initDC',
-                                    'User-Agent': 'Mozilla / 5.0(Windows NT 10.0;WOW64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 55.0.2883.87Safari / 537.36'
-                                },
+        response = session.post(
+            URLINFO['confirmSingleForQueue']['url'],
+            headers=URLINFO['confirmSingleForQueue']['headers'],
             data=data).json()
         print(response)
         if not response['data']['submitStatus']:
@@ -432,27 +434,32 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
     i = 5
     while i:
         try:
-            response = session.get(URLINFO['queryOrderWaitTime']).json()
-            print(response)
-            if response['data']['waitTime'] == -1:
-                orderId = response['data']['orderId']
+            response = session.get(URLINFO['queryOrderWaitTime']['url'].format(
+                round(time.time() * 1000), globalRepeatSubmitToken))
+            if response.json()['data']['waitTime'] == -1:
+                orderId = response.json()['data']['orderId']
+                # print(orderId)
                 break
+            time.sleep(1.5)
         except Exception as e:
             print(e)
             print('queryOrderWaitTime error')
             i -= 1
 
     # 8 resultOrderForDcQueue
-    data = 'orderSequence_no={}&_json_att=&REPEAT_SUBMIT_TOKEN={}'.format(orderId, globalRepeatSubmitToken)
-    response = session.post(URLINFO['resultOrderForDcQueue'], data=data)
+    data = 'orderSequence_no={}&_json_att=&REPEAT_SUBMIT_TOKEN={}'.format(
+        orderId, globalRepeatSubmitToken)
+    print(data)
+    response = session.post(
+        URLINFO['resultOrderForDcQueue']['url'], data=data).json()
     print(response)
     try:
-        if response.json()['data']['submitStaus']:
+        if response['data']['submitStaus']:
             print('订票成功，请登录12306查看')
         else:
             print('订票失败')
-    except:
-        print('shibai')
+    except Exception as e:
+        print(e)
 
 
 def main():
@@ -465,4 +472,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
