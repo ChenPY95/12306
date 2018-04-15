@@ -80,6 +80,15 @@ URLINFO = {
     'submitOrderRequest': {
         'url': 'https://kyfw.12306.cn/otn/leftTicket/submitOrderRequest',
         'headers': {
+            'Origin': 'https://kyfw.12306.cn',
+            'Host': 'kyfw.12306.cn',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh;q=0.8',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36',
+            'Connection': 'keep-alive',
+            'X-Requested-With': 'XMLHttpRequest',
             'Referer': 'https://kyfw.12306.cn/otn/leftTicket/init',
         }
     },
@@ -99,35 +108,52 @@ URLINFO = {
     'checkOrderInfo': {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/checkOrderInfo',
         'headers': {
-            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+            'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
     },
 
     'getQueueCount': {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/getQueueCount',
         'headers': {
-            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+            'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
     },
 
     'confirmSingleForQueue': {
-        'url':'https://kyfw.12306.cn/otn/confirmPassenger/confirmSingle',
+        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/confirmSingle',
         'headers': {
-            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+            'Origin': 'https://kyfw.12306.cn',
+            'Host': 'kyfw.12306.cn',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh;q=0.8',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36',
+            'Connection': 'keep-alive',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
     },
 
     'queryOrderWaitTime':  {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/queryOrderWaitTime?random={}&tourFlag=dc&_json_att=&REPEAT_SUBMIT_TOKEN={}',
         'headers': {
-            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+            'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
     },
 
     'resultOrderForDcQueue': {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/resultOrderForDcQueue',
         'headers': {
-            'Referer: https://kyfw.12306.cn/otn/confirmPassenger/initDc',
+            'Host': 'kyfw.12306.cn',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh;q=0.8',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36',
+            'Connection': 'keep-alive',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
     },
 }
@@ -158,5 +184,4 @@ SEAT = {
     '28': '2',
     '29': '1',
     '26': '1',
-
 }
