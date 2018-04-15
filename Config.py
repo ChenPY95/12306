@@ -26,8 +26,6 @@ URLINFO = {
     'login': {
         'url': 'https://kyfw.12306.cn/passport/web/login',
         'headers': {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-            'X-Requested-With': 'xmlHttpRequest',
             'Referer': 'https://kyfw.12306.cn/otn/login/init',
         },
     },
@@ -80,15 +78,6 @@ URLINFO = {
     'submitOrderRequest': {
         'url': 'https://kyfw.12306.cn/otn/leftTicket/submitOrderRequest',
         'headers': {
-            'Origin': 'https://kyfw.12306.cn',
-            'Host': 'kyfw.12306.cn',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36',
-            'Connection': 'keep-alive',
-            'X-Requested-With': 'XMLHttpRequest',
             'Referer': 'https://kyfw.12306.cn/otn/leftTicket/init',
         }
     },
@@ -109,6 +98,7 @@ URLINFO = {
 
     'checkOrderInfo': {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/checkOrderInfo',
+        'data': 'cancel_flag=2&bed_level_order_num=000000000000000000000000000000&passengerTicketStr={}&oldPassengerStr={}_&tour_flag=dc&randCode=&whatsSelect=1&_json_att=&REPEAT_SUBMIT_TOKEN={}',
         'headers': {
             'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
@@ -124,15 +114,6 @@ URLINFO = {
     'confirmSingleForQueue': {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/confirmSingle',
         'headers': {
-            'Origin': 'https://kyfw.12306.cn',
-            'Host': 'kyfw.12306.cn',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36',
-            'Connection': 'keep-alive',
-            'X-Requested-With': 'XMLHttpRequest',
             'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
     },
@@ -147,17 +128,10 @@ URLINFO = {
     'resultOrderForDcQueue': {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/resultOrderForDcQueue',
         'headers': {
-            'Host': 'kyfw.12306.cn',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36',
-            'Connection': 'keep-alive',
-            'X-Requested-With': 'XMLHttpRequest',
             'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
     },
+
 }
 
 HEADERS = {
@@ -170,6 +144,7 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36',
     'Connection': 'keep-alive',
     'X-Requested-With': 'XMLHttpRequest',
+    'Referer': r'https://kyfw.12306.cn/otn/login/init'
 
 }
 

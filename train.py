@@ -95,9 +95,8 @@ def login_first():
 # 访问uamtk 获取 newapptk
 def login_second():
     print('第二步登陆验证中...')
-    response = session.post(URLINFO['uamtk']['url'],
-                            data={'appid': 'otn'},
-                            headers=URLINFO['uamtk']['headers']).json()
+    session.headers['Referer'] = URLINFO['uamtk']['headers']['Referer']
+    response = session.post(URLINFO['uamtk']['url'], data={'appid': 'otn'}).json()
     if response['result_code']:
         print('第二步登陆验证失败')
         return False
@@ -111,8 +110,7 @@ def login_third(newapptk):
     i = 5
     while i:
         try:
-            response = session.post(URLINFO['uamauthclient']['url'],
-                                data={'tk': newapptk}, timeout=5).json()
+            response = session.post(URLINFO['uamauthclient']['url'], data={'tk': newapptk}).json()
             if response['result_code'] == 0:
                 # print('登录用户: ' + response['username'])
                 return True
@@ -139,8 +137,13 @@ def login():
     return False
 
 
+def login_out():
+    session.headers['Referer'] = URLINFO['loginOut']['headers']['Referer']
+    session.get(URLINFO['loginOut']['url'])
+
+
 def get_city_code():
-    city_code = requests.get(URLS['city_code'], verify=False).text
+    city_code = requests.get(URLINFO['city_code'], verify=False).text
     with open('city_code.txt', 'w') as f:
         f.write(city_code)
 
@@ -252,7 +255,6 @@ def search_ticket():
                       check_no(train_detail[26]),
                       train_detail[11])
                 print('----------------------------------------------------------------')
-
                 for seat in SEAT_WANTED:
                     if train_detail[int(seat)] != '无' or train_detail[int(seat)] != '' and train_detail[11] == 'Y':
                         print('查到车次')
@@ -271,9 +273,7 @@ def find_tickets():
                 response = session.get(URLINFO['url_query'].format(
                     train_date=TRAIN_DATE,
                     from_station_code=FROM_STATION_CODE,
-                    to_station_code=TO_STATION_CODE),
-                    headers=HEADERS
-                )
+                    to_station_code=TO_STATION_CODE))
                 train_list = response.json()['data']['result']
                 # print_train_info(train_list)
                 return(search_ticket())
@@ -304,7 +304,16 @@ def choose_passenger(info):
 
 
 def book_ticket(train_secret_str, from_station, to_station, seat):
-    # 1 subOrderRequest
+    # 1 checkUser
+    session.headers['Referer'] = URLINFO['checkUser']['headers']['Referer']
+    response = session.post(URLINFO['checkUser']['url']).json()
+    if response['data']['flag']:
+        print('checkUser Succeed')
+    else:
+        print('checkUser Failed ')
+        sys.exit()
+
+    # 2 subOrderRequest
     print('subOrderRequest...')
     data = {
         'secretStr': train_secret_str,
@@ -318,9 +327,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     }
     data = str(data)[1:-1].replace(':', '=').replace(',', '&').replace(' ', '').replace('\'', '')
     data = requests.utils.requote_uri(data)
-    response = session.post(URLINFO['submitOrderRequest']['url'],
-                            headers=URLINFO['submitOrderRequest']['headers'],
-                            data=data).json()
+    response = session.post(URLINFO['submitOrderRequest']['url'], data=data).json()
     # print(response)
     if response['status']:
         print('subOrderRequest Succeed')
@@ -329,32 +336,25 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
         print(response['messages'])
         sys.exit()
 
-    # 2 initDC
+    # 3 initDC
     print('init')
-    try:
-        response = session.post(URLINFO['initDC']['url'],
-                                headers=URLINFO['initDC']['headers'],
-                                data='_json_att=')
-    except:
-        sys.exit()
+    response = session.post(URLINFO['initDC']['url'], data='_json_att=').text
     pattern = re.compile('globalRepeatSubmitToken = \'(.*?)\'')
     pattern2 = re.compile('ticketInfoForPassengerForm=(.*?);')
-    globalRepeatSubmitToken = pattern.findall(response.text)[0]
-    ticketInfoForPassengerForm = json.loads(pattern2.findall(response.text)[0].replace('\'', '\"'))
+    globalRepeatSubmitToken = pattern.findall(response)[0]
+    ticketInfoForPassengerForm = json.loads(pattern2.findall(response)[0].replace('\'', '\"'))
     # print(globalRepeatSubmitToken)
     # print(ticketInfoForPassengerForm)
 
-    # 3 getPassengerDTOs
+    # getPassengerDTOs
     print('getPassengerMessage...')
     data = {
         '_json_att': '',
         'REPEAT_SUBMIT_TOKEN': globalRepeatSubmitToken,
     }
+    session.headers['Referer'] = URLINFO['passenger']['headers']['Referer']
     try:
-        response = session.post(URLINFO['passenger']['url'],
-                                headers=URLINFO['passenger']['headers'],
-                                data=data).json()
-        # print(response)
+        response = session.post(URLINFO['passenger']['url'], data=data).json()
         passenger = choose_passenger(response)
         # print('get ' + passenger['passenger_name'] + '\'s message ')
     except Exception as e:
@@ -374,13 +374,9 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
                       passenger['passenger_id_type_code'] + ',' + \
                       passenger['passenger_id_no'] + ',' + \
                       passenger['passenger_type'] + '_'
-
-    data = 'cancel_flag=2&bed_level_order_num=000000000000000000000000000000&passengerTicketStr={}&oldPassengerStr={}_&tour_flag=dc&randCode=&whatsSelect=1&_json_att=&REPEAT_SUBMIT_TOKEN={}'.format(
-        passengerTicketStr, oldPassengerStr, globalRepeatSubmitToken)
+    data = URLINFO['checkOrderInfo']['data'].format(passengerTicketStr, oldPassengerStr, globalRepeatSubmitToken)
     data = requests.utils.requote_uri(data)
-    response = session.post(URLINFO['checkOrderInfo']['url'],
-                            headers=URLINFO['checkOrderInfo']['headers'],
-                            data=data).json()
+    response = session.post(URLINFO['checkOrderInfo']['url'], data=data).json()
     # print(response)
     if response['data']['submitStatus']:
         print('checkOrderInfo Succeed')
@@ -406,9 +402,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
         'REPEAT_SUBMIT_TOKEN': globalRepeatSubmitToken,
 
     }
-    response = session.post(URLINFO['getQueueCount']['url'],
-                            headers=URLINFO['getQueueCount']['headers'],
-                            data=data).json()
+    response = session.post(URLINFO['getQueueCount']['url'], data=data).json()
     if response['status']:
         print('getQueueCount Succeed')
     else:
@@ -437,9 +431,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     i = 3
     while i:
         try:
-            response = session.post(URLINFO['confirmSingleForQueue']['url'],
-                                    headers=URLINFO['confirmSingleForQueue']['headers'],
-                                    data=data).json()
+            response = session.post(URLINFO['confirmSingleForQueue']['url'], data=data).json()
         # print(response)
             if response['data']['submitStatus']:
                 print('confirmSingleForQueue Succeed')
@@ -459,11 +451,10 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     # 7 queryOrderWaitTime
     print('queryOrderWaitTime...')
     i = 20
+    order_id = ''
     while i:
         try:
-            response = session.get(URLINFO['queryOrderWaitTime']['url'].format(
-                round(time.time()*1000), globalRepeatSubmitToken),
-                headers=URLINFO['queryOrderWaitTime']['headers'])
+            response = session.get(URLINFO['queryOrderWaitTime']['url'].format(round(time.time()*1000),globalRepeatSubmitToken))
             if response.json()['data']['waitTime'] == -1:
                 order_id = response.json()['data']['orderId']
                 # print(orderId)
@@ -480,9 +471,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     print('resultOrderForDcQueue...')
     data = 'orderSequence_no={}&_json_att=&REPEAT_SUBMIT_TOKEN={}'.format(order_id, globalRepeatSubmitToken)
     # print(data)
-    response = session.post(URLINFO['resultOrderForDcQueue']['url'],
-                            headers=URLINFO['resultOrderForDcQueue']['headers'],
-                            data=data).json()
+    response = session.post(URLINFO['resultOrderForDcQueue']['url'], data=data).json()
     # print(response)
     print('')
     try:
