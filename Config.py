@@ -102,7 +102,9 @@ URLINFO = {
 
     'passenger': {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/getPassengerDTOs',
-        'headers': 'https://kyfw.12306.cn/otn/confirePassenger/initDc'
+        'headers': {
+            'Referer': 'https://kyfw.12306.cn/otn/confirePassenger/initDc',
+        }
     },
 
     'checkOrderInfo': {

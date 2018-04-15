@@ -30,7 +30,8 @@ def get_image():
             # 关闭代码，实际图片浏览器没有关闭
             im.close()
             break
-        except:
+        except Exception as e:
+            print(e)
             time.sleep(2)
             i -= 1
     print('-------------------------')
@@ -113,7 +114,7 @@ def login_third(newapptk):
             response = session.post(URLINFO['uamauthclient']['url'],
                                 data={'tk': newapptk}, timeout=5).json()
             if response['result_code'] == 0:
-                print('登录用户: ' + response['username'])
+                # print('登录用户: ' + response['username'])
                 return True
         except json.decoder.JSONDecodeError:
             i -= 1
@@ -251,6 +252,7 @@ def search_ticket():
                       check_no(train_detail[26]),
                       train_detail[11])
                 print('----------------------------------------------------------------')
+
                 for seat in SEAT_WANTED:
                     if train_detail[int(seat)] != '无' or train_detail[int(seat)] != '' and train_detail[11] == 'Y':
                         print('查到车次')
@@ -273,7 +275,7 @@ def find_tickets():
                     headers=HEADERS
                 )
                 train_list = response.json()['data']['result']
-                print_train_info(train_list)
+                # print_train_info(train_list)
                 return(search_ticket())
             except Exception as e:
                 print(e)
@@ -301,11 +303,11 @@ def choose_passenger(info):
     return False
 
 
-def book_ticket(trainSecretStr, from_station, to_station, seat):
+def book_ticket(train_secret_str, from_station, to_station, seat):
     # 1 subOrderRequest
     print('subOrderRequest...')
     data = {
-        'secretStr': trainSecretStr,
+        'secretStr': train_secret_str,
         'train_date': TRAIN_DATE,
         'back_train_date': time.strftime('%Y-%m-%d', time.localtime(time.time())),
         'tour_flag': 'dc',
@@ -330,7 +332,9 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
     # 2 initDC
     print('init')
     try:
-        response = session.post(URLINFO['initDC']['url'], data='_json_att=')
+        response = session.post(URLINFO['initDC']['url'],
+                                headers=URLINFO['initDC']['headers'],
+                                data='_json_att=')
     except:
         sys.exit()
     pattern = re.compile('globalRepeatSubmitToken = \'(.*?)\'')
@@ -347,10 +351,12 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
         'REPEAT_SUBMIT_TOKEN': globalRepeatSubmitToken,
     }
     try:
-        response = session.post(URLINFO['passenger']['url'], data=data).json()
+        response = session.post(URLINFO['passenger']['url'],
+                                headers=URLINFO['passenger']['headers'],
+                                data=data).json()
         # print(response)
         passenger = choose_passenger(response)
-        print('get ' + passenger['passenger_name'] + '\'s message ')
+        # print('get ' + passenger['passenger_name'] + '\'s message ')
     except Exception as e:
         print(e)
         sys.exit()
@@ -385,9 +391,9 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
 
     # 5 getQueueCount
     print('getQueueCount...')
-    dateGMT = time.strftime('%a %b %d %Y %H:%M:%S  GMT+0800', time.strptime(TRAIN_DATE, '%Y-%m-%d'))
+    date_GMT = time.strftime('%a %b %d %Y %H:%M:%S  GMT+0800', time.strptime(TRAIN_DATE, '%Y-%m-%d'))
     data = {
-        'train_date': dateGMT,
+        'train_date': date_GMT,
         'train_no': ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['train_no'],
         'stationTrainCode': ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['station_train_code'],
         'seatType': seat,
@@ -410,7 +416,6 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
         print(response)
         sys.exit()
 
-
     # 6 confirmSingleForQueue
     print('confirmSingleForQueue...')
     data = {
@@ -429,7 +434,7 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
         '_json_att': '',
         'REPEAT_SUBMIT_TOKEN': globalRepeatSubmitToken,
     }
-    i = 5
+    i = 3
     while i:
         try:
             response = session.post(URLINFO['confirmSingleForQueue']['url'],
@@ -451,17 +456,16 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
         if i == 0:
             sys.exit()
 
-
-
     # 7 queryOrderWaitTime
     print('queryOrderWaitTime...')
     i = 20
     while i:
         try:
             response = session.get(URLINFO['queryOrderWaitTime']['url'].format(
-                round(time.time()*1000), globalRepeatSubmitToken))
+                round(time.time()*1000), globalRepeatSubmitToken),
+                headers=URLINFO['queryOrderWaitTime']['headers'])
             if response.json()['data']['waitTime'] == -1:
-                orderId = response.json()['data']['orderId']
+                order_id = response.json()['data']['orderId']
                 # print(orderId)
                 break
         except Exception as e:
@@ -472,10 +476,9 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
         if i == 0:
             sys.exit()
 
-
     # 8 resultOrderForDcQueue
     print('resultOrderForDcQueue...')
-    data = 'orderSequence_no={}&_json_att=&REPEAT_SUBMIT_TOKEN={}'.format(orderId, globalRepeatSubmitToken)
+    data = 'orderSequence_no={}&_json_att=&REPEAT_SUBMIT_TOKEN={}'.format(order_id, globalRepeatSubmitToken)
     # print(data)
     response = session.post(URLINFO['resultOrderForDcQueue']['url'],
                             headers=URLINFO['resultOrderForDcQueue']['headers'],
@@ -494,8 +497,8 @@ def book_ticket(trainSecretStr, from_station, to_station, seat):
 
 def main():
     if login():
-        train, from_station, to_station, seat = find_tickets()
-        book_ticket(train, from_station, to_station, seat)
+        train_secret_str, from_station, to_station, seat = find_tickets()
+        book_ticket(train_secret_str, from_station, to_station, seat)
 
     print('Done')
 
