@@ -346,7 +346,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     # print(globalRepeatSubmitToken)
     # print(ticketInfoForPassengerForm)
 
-    # getPassengerDTOs
+    # 4 getPassengerDTOs
     print('getPassengerMessage...')
     data = {
         '_json_att': '',
@@ -361,7 +361,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
         print(e)
         sys.exit()
 
-    # 4 checkOrderInfo
+    # 5 checkOrderInfo
     print('checkOrderInfo...')
     passengerTicketStr = seat + ',' + \
                          passenger['passenger_flag'] + ',' + \
@@ -385,7 +385,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
         print(response)
         sys.exit()
 
-    # 5 getQueueCount
+    # 6 getQueueCount
     print('getQueueCount...')
     date_GMT = time.strftime('%a %b %d %Y %H:%M:%S  GMT+0800', time.strptime(TRAIN_DATE, '%Y-%m-%d'))
     data = {
@@ -410,7 +410,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
         print(response)
         sys.exit()
 
-    # 6 confirmSingleForQueue
+    # 7 confirmSingleForQueue
     print('confirmSingleForQueue...')
     data = {
         'passengerTicketStr': passengerTicketStr,
@@ -448,7 +448,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
         if i == 0:
             sys.exit()
 
-    # 7 queryOrderWaitTime
+    # 8 queryOrderWaitTime
     print('queryOrderWaitTime...')
     i = 20
     order_id = ''
@@ -467,7 +467,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
         if i == 0:
             sys.exit()
 
-    # 8 resultOrderForDcQueue
+    # 9 resultOrderForDcQueue
     print('resultOrderForDcQueue...')
     data = 'orderSequence_no={}&_json_att=&REPEAT_SUBMIT_TOKEN={}'.format(order_id, globalRepeatSubmitToken)
     # print(data)
@@ -488,7 +488,6 @@ def main():
     if login():
         train_secret_str, from_station, to_station, seat = find_tickets()
         book_ticket(train_secret_str, from_station, to_station, seat)
-
     print('Done')
 
 
