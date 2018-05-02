@@ -1,10 +1,11 @@
 # -*-coding:utf-8-*-
 import requests
 import urllib3
+import urllib.request
 import os
 from PIL import Image
 import re
-from Info import *
+from User_Info import *
 from Config import *
 import time
 import json
@@ -113,6 +114,7 @@ def login_third(newapptk):
             response = session.post(URLINFO['uamauthclient']['url'], data={'tk': newapptk}).json()
             if response['result_code'] == 0:
                 # print('登录用户: ' + response['username'])
+                session.get(URLINFO['initMy12306']['url'])
                 return True
         except json.decoder.JSONDecodeError:
             i -= 1
@@ -264,7 +266,6 @@ def search_ticket():
                                choose_seat(seat))
 
 
-
 def find_tickets():
     if FROM_STATION_CODE and TO_STATION_CODE:
         i = 3
@@ -306,7 +307,7 @@ def choose_passenger(info):
 def book_ticket(train_secret_str, from_station, to_station, seat):
     # 1 checkUser
     session.headers['Referer'] = URLINFO['checkUser']['headers']['Referer']
-    response = session.post(URLINFO['checkUser']['url']).json()
+    response = session.post(URLINFO['checkUser']['url'], data={'_json_att': ''}).json()
     if response['data']['flag']:
         print('checkUser Succeed')
     else:
@@ -325,9 +326,9 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
         'query_to_station_name': to_station,
         'undefined': ''
     }
-    data = str(data)[1:-1].replace(':', '=').replace(',', '&').replace(' ', '').replace('\'', '')
-    data = requests.utils.requote_uri(data)
-    response = session.post(URLINFO['submitOrderRequest']['url'], data=data).json()
+    data1 = str(data)[1:-1].replace(':', '=').replace(',', '&').replace(' ', '').replace('\'', '')
+    data2 = requests.utils.requote_uri(data1)
+    response = session.post(URLINFO['submitOrderRequest']['url'], data=data2).json()
     # print(response)
     if response['status']:
         print('subOrderRequest Succeed')
@@ -338,7 +339,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
 
     # 3 initDC
     print('init')
-    response = session.post(URLINFO['initDC']['url'], data='_json_att=').text
+    response = session.post(URLINFO['initDC']['url'], data={'_json_att=': ''}).text
     pattern = re.compile('globalRepeatSubmitToken = \'(.*?)\'')
     pattern2 = re.compile('ticketInfoForPassengerForm=(.*?);')
     globalRepeatSubmitToken = pattern.findall(response)[0]
@@ -373,9 +374,11 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     oldPassengerStr = passenger['passenger_name'] + ',' + \
                       passenger['passenger_id_type_code'] + ',' + \
                       passenger['passenger_id_no'] + ',' + \
-                      passenger['passenger_type'] + '_'
+                      passenger['passenger_type']
     data = URLINFO['checkOrderInfo']['data'].format(passengerTicketStr, oldPassengerStr, globalRepeatSubmitToken)
-    data = requests.utils.requote_uri(data)
+    # print(data)
+    data = urllib.request.quote(data).replace('%26', '&').replace('%3D', '=')
+    # print(data)
     response = session.post(URLINFO['checkOrderInfo']['url'], data=data).json()
     # print(response)
     if response['data']['submitStatus']:
@@ -388,6 +391,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     # 6 getQueueCount
     print('getQueueCount...')
     date_GMT = time.strftime('%a %b %d %Y %H:%M:%S  GMT+0800', time.strptime(TRAIN_DATE, '%Y-%m-%d'))
+    print(date_GMT)
     data = {
         'train_date': date_GMT,
         'train_no': ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['train_no'],
@@ -432,7 +436,6 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     while i:
         try:
             response = session.post(URLINFO['confirmSingleForQueue']['url'], data=data).json()
-        # print(response)
             if response['data']['submitStatus']:
                 print('confirmSingleForQueue Succeed')
                 break
@@ -454,7 +457,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     order_id = ''
     while i:
         try:
-            response = session.get(URLINFO['queryOrderWaitTime']['url'].format(round(time.time()*1000),globalRepeatSubmitToken))
+            response = session.get(URLINFO['queryOrderWaitTime']['url'].format(round(time.time()*1000), globalRepeatSubmitToken))
             if response.json()['data']['waitTime'] == -1:
                 order_id = response.json()['data']['orderId']
                 # print(orderId)
@@ -470,9 +473,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     # 9 resultOrderForDcQueue
     print('resultOrderForDcQueue...')
     data = 'orderSequence_no={}&_json_att=&REPEAT_SUBMIT_TOKEN={}'.format(order_id, globalRepeatSubmitToken)
-    # print(data)
     response = session.post(URLINFO['resultOrderForDcQueue']['url'], data=data).json()
-    # print(response)
     print('')
     try:
         if response['data']['submitStatus']:

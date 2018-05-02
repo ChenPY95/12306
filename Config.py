@@ -57,6 +57,13 @@ URLINFO = {
         }
     },
 
+    'initMy12306': {
+        'url': 'https://kyfw.12306.cn/otn/index/initMy12306',
+        'headers': {
+            'Referer': 'https://kyfw.12306.cn/otn/passport?redirect=/otn/login/userLogin',
+        }
+    },
+
     'city_code': {
         'url': 'https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9050',
     },
@@ -64,7 +71,7 @@ URLINFO = {
     'checkUser': {
         'url': 'https://kyfw.12306.cn/otn/login/checkUser',
         'headers': {
-            'Referer': r'https://kyfw.12306.cn/otn/leftTicket/init',
+            'Referer': 'https://kyfw.12306.cn/otn/leftTicket/init?random=1525242559379',
         }
     },
 
@@ -92,7 +99,7 @@ URLINFO = {
     'passenger': {
         'url': 'https://kyfw.12306.cn/otn/confirmPassenger/getPassengerDTOs',
         'headers': {
-            'Referer': 'https://kyfw.12306.cn/otn/confirePassenger/initDc',
+            'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
     },
 
@@ -112,7 +119,7 @@ URLINFO = {
     },
 
     'confirmSingleForQueue': {
-        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/confirmSingle',
+        'url': 'https://kyfw.12306.cn/otn/confirmPassenger/confirmSingleForQueue',
         'headers': {
             'Referer': 'https://kyfw.12306.cn/otn/confirmPassenger/initDc',
         }
