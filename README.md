@@ -2,9 +2,9 @@
 - python 实现12306自动抢票
 # 文件
 - train --- 主程序
-- Config --- 配置信息
-- User_Info --- 个人账户及车票信息（需要修改的文件）
+- Config --- 配置信息（主要是url信息）
 - city_code --- 城市代码
+- User_Info --- 个人账户及车票信息（需要修改的文件）
 # 流程
 - 验证码，需要手动输入
 - <div align=center><img width="600" height="400" src="img.jpg"/></div>
