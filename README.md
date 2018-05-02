@@ -11,4 +11,4 @@
 - 完成订票
 - <div align=center><img width="700" height="400" src="./picture/2.jpg"/></div>
 - 然后到12306官网完成付款
-- <div align=center><img width="700" height="300" src="./picture/订单.jpg"/></div>
+- <div align=center><img width="700" height="200" src="./picture/订单.jpg"/></div>
