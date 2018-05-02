@@ -6,7 +6,7 @@
 - city_code --- 城市代码
 - User_Info --- 个人账户及车票信息（需要修改的文件）
 # 流程
-- 验证码，需要手动输入
+- 验证码，需要手动输入，程序自动下载验证码，并打开，只需将目标位置填入程序中
 - <div align=center><img width="600" height="400" src="img.jpg"/></div>
 - 完成订票
 - <div align=center><img width="700" height="400" src="./picture/2.jpg"/></div>
