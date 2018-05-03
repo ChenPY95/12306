@@ -23,7 +23,6 @@ def get_image():
     while i:
         try:
             response = session.get(URLINFO['captcha-image']['url'].format(random.random))
-            # print(session.cookies)
             with open('img.jpg', 'wb') as f:
                 f.write(response.content)
             im = Image.open('img.jpg')
@@ -67,7 +66,6 @@ def check_image():
         'rand': 'sjrand'
     }
     response = session.post(URLINFO['captcha-check']['url'], data=data)
-    # print(session.cookies)
     if response.json()['result_code'] == '4':
         print('验证码通过')
         return True
@@ -376,9 +374,7 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
                       passenger['passenger_id_no'] + ',' + \
                       passenger['passenger_type']
     data = URLINFO['checkOrderInfo']['data'].format(passengerTicketStr, oldPassengerStr, globalRepeatSubmitToken)
-    # print(data)
     data = urllib.request.quote(data).replace('%26', '&').replace('%3D', '=')
-    # print(data)
     response = session.post(URLINFO['checkOrderInfo']['url'], data=data).json()
     # print(response)
     if response['data']['submitStatus']:
@@ -391,7 +387,6 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     # 6 getQueueCount
     print('getQueueCount...')
     date_GMT = time.strftime('%a %b %d %Y %H:%M:%S  GMT+0800', time.strptime(TRAIN_DATE, '%Y-%m-%d'))
-    print(date_GMT)
     data = {
         'train_date': date_GMT,
         'train_no': ticketInfoForPassengerForm['queryLeftTicketRequestDTO']['train_no'],
