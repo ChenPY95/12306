@@ -452,8 +452,9 @@ def book_ticket(train_secret_str, from_station, to_station, seat):
     order_id = ''
     while i:
         try:
-            response = session.get(URLINFO['queryOrderWaitTime']['url'].format(round(time.time()*1000), globalRepeatSubmitToken))
-            if response.json()['data']['waitTime'] == -1:
+            response = session.get(URLINFO['queryOrderWaitTime']['url'].format(round(time.time()*1000), globalRepeatSubmitToken)).json()
+            print(response['data']['waitTime'])
+            if response['data']['waitTime'] == -1:
                 order_id = response.json()['data']['orderId']
                 # print(orderId)
                 break
