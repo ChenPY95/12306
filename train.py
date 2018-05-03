@@ -484,6 +484,7 @@ def main():
     if login():
         train_secret_str, from_station, to_station, seat = find_tickets()
         book_ticket(train_secret_str, from_station, to_station, seat)
+        login_out()
     print('Done')
 
 
