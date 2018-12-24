@@ -1,4 +1,5 @@
-# 12306
+# 12306  
+***貌似已失效***  
 - python 实现12306自动抢票
 - 使用前需登录[12306](https://kyfw.12306.cn/otn/leftTicket/init)查看车次信息并填入User_Info
 # 文件
